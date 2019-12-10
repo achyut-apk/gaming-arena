@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1//DTD/xhtml1-transitional.dtd">
+
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Tic Tac Toe</title>
+		<style type="text/css">
+			@viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-ms-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-webkit-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			body{
+				margin:0;
+				padding:0;
+				text-align: center;
+			}
+			#cvs{
+				position: absolute;
+				top: 40px;
+				left:5px;
+				width:300px;
+				height:300px;
+			}
+			button{
+				color: #000;
+				font-size: 4.5em;
+				font-family: 'ARIAL';
+				padding: 0;
+			}
+			#rstart, #mode{
+				color: black;
+				font-size: 1em;
+				max-width: 80px;
+				width: 80px;
+				height: 27px;
+				max-height: 30px;
+				background: #84ae14;
+				border: 1px solid black;
+				border-radius: 20px;
+				position: absolute;
+				left:115px;
+				top: 350px;
+			}
+			#mode{
+				top: 10px;
+				left: 85px;
+				max-width: 200px;
+				width: 140px;
+				height: 25px;
+
+			}
+			#p1{
+				position: absolute;
+				top: 0;
+				font-size: 1.2em;
+				font-family: 'ARIAL';
+				left: 15px;
+			}
+			#p0{
+				position: absolute;
+				font-size: 1.2em;
+				font-family: 'ARIAL';
+				top: 0;
+				left: 250px;
+			}
+		</style>
+	</head>
+	<body>
+		<p id = "p1">X: 0</p>
+		<button id="mode" onClick="switchPlayer();">Single Player</button>
+		<p id = "p0">O: 0</p>
+			<canvas id="cvs" width="300" height="300">
+			</canvas>
+		<button id="rstart" onclick="restart();">Restart</button>
+
+		<script type= "text/javascript">
+			c = document.getElementById("cvs");
+			ctx = c.getContext('2d');
+
+			var p = 25;
+			var turn = 1;
+			var ts = 82;
+			var lh = 250;
+			var tiles;
+			var clicked = new Array();
+			var buttonList = {};
+			
+			var b0 = new createButton(p+5,40+p, 0);
+			var b1 = new createButton(ts+2+p+5,40+p, 1);
+			var b2 = new createButton(2*ts+4+p+5,40+p, 2);
+			var b3 = new createButton(p+5,ts+2+p+40, 3);
+			var b4 = new createButton(ts+2+p+5,ts+p+2+40, 4);
+			var b5 = new createButton(2*ts+4+p+5,p+ts+2+40, 5);
+			var b6 = new createButton(p+5,2*ts+4+p+40, 6);
+			var b7 = new createButton(ts+2+p+5,2*ts+p+4+40, 7);
+			var b8 = new createButton(2*ts+4+p+5,2*ts+p+4+40, 8);
+
+
+			p1 = document.getElementById('p1');
+			p0 = document.getElementById('p0');
+
+			var comboMade = false;
+			var xscore = 0;
+			var oscore = 0;
+
+			var player = 0;
+			var p1,p0;
+			function create(){
+				
+				ctx.fillStyle = '#84ae14';
+				ctx.fillRect(0,0,c.width,c.height);
+				ctx.fillStyle = 'white';
+
+				ctx.fillRect(ts+p,p,2,lh);
+				ctx.fillRect(2*ts+p+2,p,2,lh);
+				ctx.fillRect(p,p+ts,lh,2);
+				ctx.fillRect(p,p+2*ts+2,lh,2);
+
+			}
+			function check(){
+				var v1 = tiles[0]==tiles[3]&&tiles[3]==tiles[6];
+				var v2 = tiles[1]==tiles[4]&&tiles[4]==tiles[7];
+				var v3 = tiles[2]==tiles[5]&&tiles[5]==tiles[8];
+				var h1 = tiles[0]==tiles[1]&&tiles[1]==tiles[2];
+				var h2 = tiles[4]==tiles[3]&&tiles[3]==tiles[5];
+				var h3 = tiles[6]==tiles[7]&&tiles[7]==tiles[8];
+				var d1 = tiles[0]==tiles[4]&&tiles[4]==tiles[8];
+				var d2 = tiles[2]==tiles[6]&&tiles[6]==tiles[4];
+
+				if(v1)
+					drawLine(ts/2+p, p+15,ts/2+p, ts*3+p-11);
+				
+				if(v2)
+					drawLine(ts+ts/2+p+2, p+15, ts+2+ts/2+p, ts*3+p-11);
+
+			    if(v3)
+			     	drawLine(2*ts+4+ts/2+p, p+15, 2*ts+4+ts/2+p, ts*3+p-11);
+
+			    if(h1)
+			    	drawLine(15+p, p+ts/2,3*ts-11+p, p+ts/2);
+
+				if(h2)
+					drawLine(15+p, p+ts/2+ts+2, 3*ts-11+p, p+ts/2+ts+2);
+
+				if(h3)
+				 	drawLine(15+p, p+ts/2+2*ts+4,3*ts-11+p, p+ts/2+2*ts+4);
+
+				if(d1)
+				 	drawLine(ts/4+p, p+ts/4,2*ts+ts/4*3+p+4, ts*3+p-11);
+
+				if(d2)
+					drawLine(ts/4*3+p+4+2*ts, p+ts/4,p+ts/4, ts*3+p-11);
+			}
+
+			function drawLine(a,b,x,y){
+				comboMade = true;
+				ctx.beginPath();
+				ctx.moveTo(a, b);
+				ctx.lineTo(x, y);
+				ctx.stroke();
+			}
+
+			function switchPlayer(){
+				restart();
+				player= player==0?1:0;
+				xscore = oscore = 0;
+				p1.innerHTML = 'X: 0';
+				p0.innerHTML = 'O: 0';
+				var b = document.getElementById('mode').innerHTML = player==0?'Single Player':'Multi Player';
+			}
+
+			function playerButtonFunction(id){
+				var found = false;
+				for(i = 0; i<clicked.length; i++){
+					if(clicked[i]==id){
+						found = true;
+						break;
+					}
+				}
+				if(!found)
+					mark(id);
+			}
+			
+			function mark(id){
+				buttonList[id].innerHTML = turn==0?'O':'X';
+				clicked.push(id);
+				tiles[id] = turn;
+				check();
+				turn = comboMade?turn:turn==0?1:0;
+				if(comboMade){
+					if(turn==0)
+						oscore++;
+					else
+						xscore++;
+					p1.innerHTML = 'X: '+xscore;
+					p0.innerHTML = 'O: ' + oscore;
+				}
+				if(!comboMade && clicked.length ==9)
+					restart();
+			}
+
+			function randomButtonAction(){
+				if(clicked.length ==9)
+					restart();
+				else{
+					var found = true;
+					var k=0;
+					var i;
+
+						
+					for(i=Math.round(Math.random()*8);found;i=Math.round(Math.random()*8)){
+					
+						for(var j = 0; j<clicked.length; j++){
+							if(clicked[j]==i){
+								found = true;
+								k=0;
+								break;
+							}
+							else
+							k++;
+						}
+						if(k==clicked.length){
+							found = false;
+							break;
+						}
+					}
+						mark(i);
+				}
+			}
+
+			function checkIncompleteMatch(value){
+				var ret = false;
+				for(i = 0; i<tiles.length; i++){
+					if(tiles[i]==value){
+						console.log(i);
+						var ind = checkMatchingNeighbours(i);
+						if(ind !== false){
+							ret = true;
+							console.log(ind);
+							mark(ind);
+							break;
+						}
+					}
+				}
+				return ret;
+			}
+
+			function checkMatchingNeighbours(i){
+				var neighbours = new Array();
+				var ret = null;
+
+				switch(i){
+					case 0: neighbours.push(1,2,3,6,4,8);break;
+					case 1: neighbours.push(0,2,4,7);break;
+					case 2: neighbours.push(0,1,4,6,5,8);break;
+					case 3: neighbours.push(0,6,4,5);break;
+					case 4: neighbours.push(0,8,2,6,1,7,3,5);break;
+					case 5: neighbours.push(2,8,4,3);break;
+					case 6: neighbours.push(0,3,4,2,7,8);break;
+					case 7: neighbours.push(1,4,6,8);break;
+					case 8: neighbours.push(0,4,2,5,6,7);break;
+				}	
+
+				for(index = 0; index<neighbours.length; index++){
+					if(tiles[i]==tiles[neighbours[index]]&&tiles[neighbours[index+1]]>1){
+						ret = neighbours[index+1];
+						console.log(index+1);
+						break;
+					}
+					if(tiles[i]==tiles[neighbours[index+1]]&&tiles[neighbours[index]]>1){
+						ret = neighbours[index];
+						break;	
+					}
+					index++;
+					ret = false;
+				}
+
+				return ret;
+			}
+			function createButton(x ,y, id){
+				var button = document.createElement('BUTTON');
+				button.style.background = 'rgba(255,255,255,0)';
+				button.style.position = 'absolute';
+				button.style.height = '82px';
+				button.style.width = '82px';
+				button.style.top = y+'px';
+				button.style.left = x+'px';
+				button.style.border = 'none';
+
+				buttonList[id] = button;
+
+				button.onclick = function(){	
+					if(!comboMade){
+						playerButtonFunction(id);}
+						
+					if(!comboMade && clicked.length>0){
+						if(player==0&&turn==0){
+							var canMakeMatch = checkIncompleteMatch(0);
+							console.log('canMakeMatch'+canMakeMatch);
+
+							if(!canMakeMatch){
+								var canStopMatch = checkIncompleteMatch(1);
+								console.log('canStopMatch'+canStopMatch);
+								if(!canStopMatch)
+									randomButtonAction();									
+							}
+						}	
+					}
+				};
+				document.body.appendChild(button);
+
+				return button;
+			}
+
+			function restart(){
+				create();
+				tiles = [
+					2,3,4,
+					5,6,7,
+					8,9,10
+				];
+				comboMade = false;
+				clicked = new Array();
+				turn = 1;
+
+				b0.innerHTML = null;
+				b1.innerHTML = null;
+				b2.innerHTML = null;
+				b3.innerHTML = null;
+				b4.innerHTML = null;
+				b5.innerHTML = null;
+				b6.innerHTML = null;
+				b7.innerHTML = null;
+				b8.innerHTML = null;
+			}
+			window.onload = function(){
+				create(); 
+				restart();
+			}
+
+			</script>
+	</body>
+	</html>

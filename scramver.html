@@ -1,0 +1,365 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1//DTD/xhtml1-transitional.dtd">
+
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>ScrambleVerifier</title>
+		<style type="text/css">
+			@viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-ms-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-webkit-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			#main{
+				height: 33em;
+				width: 44em;
+				background:pink;
+				margin-bottom:0.6em;
+				padding: 1em 3em;
+			}
+			body{
+				
+				font-family: COMIC SANS MS;
+			}
+			.side{
+				width: 11em;
+				height: 11em;
+			}
+			.side > div{
+				width: 3.4em;
+				height: 3.4em;
+				border: 0.12em solid black;
+				border-radius: 0.4em;
+			}
+			#yellow,#white{
+				margin-left: 11em; 
+			}
+			button{
+				margin-bottom: 0.25em;
+			}
+			div{
+				float: left;
+			}
+			#main{
+				float: none;
+			}
+			button{
+				background: transparent;
+				border: 0.115em solid #000; 
+				padding: 0.13em 0.4em;
+				font-size: 1em;
+				font-family: COMIC SANS MS;
+			}
+			#label{
+				font-size: 1em;
+				position: relative;
+				float: right;
+				top : -1em;
+				left: 0.2em;
+				text-align: right;
+				font-family: COMIC SANS MS;
+				margin-right: 0.5em;
+			}
+			@media screen and (max-width: 700px){
+				button, #label{
+					font-size: 1.8em;
+				font-family: COMIC SANS MS;
+				}
+			}
+		</style>
+		<script type = "text/javascript">	
+		</script>
+	</head>
+	<body>
+	<div>
+	<div id="main">	
+		<div id="white"class="side">
+			<div id="wa" class="white">
+			</div>
+			<div id="wb" class="white">
+			</div>
+			<div id="wc" class="white">
+			</div>
+			<div id="wd" class="white">
+			</div>
+			<div id="we" class="white">
+			</div>
+			<div id="wf" class="white">
+			</div>
+			<div id="ww" class="white">
+			</div>
+			<div id="wh" class="white">
+			</div>
+			<div id="wi" class="white">
+			</div>
+		</div>
+		<div id="lateral">
+			<div id="orange" class="side">
+				<div id="oa" class="orange">
+				</div>
+				<div id="ob" class="orange">
+				</div>
+				<div id="oc" class="orange">
+				</div>
+				<div id="od" class="orange">
+				</div>
+				<div id="oe" class="orange">
+				</div>
+				<div id="of" class="orange">
+				</div>
+				<div id="og" class="orange">
+				</div>
+				<div id="oh" class="orange">
+				</div>
+				<div id="oi" class="orange">
+				</div>
+			</div>
+			<div id="green" class="side">
+				<div id="ga" class="green">
+				</div>
+				<div id="gb" class="green">
+				</div>
+				<div id="gc" class="green">
+				</div>
+				<div id="gd" class="green">
+				</div>
+				<div id="ge" class="green">
+				</div>
+				<div id="gf" class="green">
+				</div>
+				<div id="gg" class="green">
+				</div>
+				<div id="gh" class="green">
+				</div>
+				<div id="gi" class="green">
+				</div>
+			</div>
+			<div id="red" class="side">
+				<div id="ra" class="red">
+				</div>
+				<div id="rb" class="red">
+				</div>
+				<div id="rc" class="red">
+				</div>
+				<div id="rd" class="red">
+				</div>
+				<div id="re" class="red">
+				</div>
+				<div id="rf" class="red">
+				</div>
+				<div id="rg" class="red">
+				</div>
+				<div id="rh" class="red">
+				</div>
+				<div id="ri" class="red">
+				</div>
+			</div>
+			<div id="blue" class="side">
+				<div id="ba" class="blue">
+				</div>
+				<div id="bb" class="blue">
+				</div>
+				<div id="bc" class="blue">
+				</div>
+				<div id="bd" class="blue">
+				</div>
+				<div id="be" class="blue">
+				</div>
+				<div id="bf" class="blue">
+				</div>
+				<div id="bg" class="blue">
+				</div>
+				<div id="bh" class="blue">
+				</div>
+				<div id="bi" class="blue">
+				</div>
+			</div>
+		</div>
+		
+		<div id="yellow" class="side">
+			<div id="ya" class="yellow">
+			</div>
+			<div id="yb" class="yellow">
+			</div>
+			<div id="yc" class="yellow">
+			</div>
+			<div id="yd" class="yellow">
+			</div>
+			<div id="ye" class="yellow">
+			</div>
+			<div id="yf" class="yellow">
+			</div>
+			<div id="yg" class="yellow">
+			</div>
+			<div id="yh" class="yellow">
+			</div>
+			<div id="yi" class="yellow">
+			</div>
+		</div>
+	</div>		
+			<button onClick="bhkk();" name="kuch">Enter Scramble</button>
+			<p id="label"></p>
+			<br>
+			<button onClick="reset();" name="kc">Reset</button>
+			 </div>
+		<script type = "text/javascript">
+
+			var input;
+			var scram=0;
+			var white = new Array(1,1,1,1,1,1,1,1,1);
+			var red = new Array(2,2,2,2,2,2,2,2,2);
+			var yellow = new Array(3,3,3,3,3,3,3,3,3);
+			var green = new Array(4,4,4,4,4,4,4,4,4);
+			var blue = new Array(5,5,5,5,5,5,5,5,5);
+			var orange = new Array(6,6,6,6,6,6,6,6,6);
+		
+			var whitearr = document.getElementsByClassName("white");
+			var yellarr = document.getElementsByClassName("yellow");
+			var bluearr = document.getElementsByClassName("blue");
+			var redarrr = document.getElementsByClassName("red");
+			var greenarr = document.getElementsByClassName("green");
+			var oranarr = document.getElementsByClassName("orange");
+			
+			function bhkk(){
+			input = prompt("Enter a scramble: ", "");
+			if(input!=0){
+			
+			document.getElementById('label').innerHTML = '';
+			scram = input.split(' ');
+			verify();
+			load();
+			}
+			else
+			document.getElementById('label').innerHTML = 'Please input scramble.';
+			}
+			
+			function reset(){
+				 white = new Array(1,1,1,1,1,1,1,1,1);
+				 red = new Array(2,2,2,2,2,2,2,2,2);
+				 yellow = new Array(3,3,3,3,3,3,3,3,3);
+				 green = new Array(4,4,4,4,4,4,4,4,4);
+				 blue = new Array(5,5,5,5,5,5,5,5,5);
+				 orange = new Array(6,6,6,6,6,6,6,6,6);
+				
+			document.getElementById('label').innerHTML = '';
+				load();
+			}
+			
+			function verify(){
+				var str=scram.join(' ');
+				document.getElementById('label').innerHTML = str;
+				for(var z = 0; z < scram.length; z++){
+				
+					switch(scram[z]){
+						case "u": case "U": turn(green,0,1,2,orange,0,1,2,blue,0,1,2,red,0,1,2,white,6,3,8,7,2,5,0,1);break;
+						case "u'": case "U'": turn(green,0,1,2,red,0,1,2,blue,0,1,2,orange,0,1,2,white,6,3,0,1,2,5,8,7);break;
+						case "u2": case "U2": turn(green,0,1,2,orange,0,1,2,blue,0,1,2,red,0,1,2,white,6,3,8,7,2,5,0,1);
+									turn(green,0,1,2,orange,0,1,2,blue,0,1,2,red,0,1,2,white,6,3,8,7,2,5,0,1);break;
+						
+						case "d":  case "D": turn(green,8,7,6,red,8,7,6,blue,8,7,6,orange,8,7,6,yellow,2,5,0,1,6,3,8,7);break;
+						case "d'":  case "D'": turn(green,8,7,6,orange,8,7,6,blue,8,7,6,red,8,7,6,yellow,2,5,8,7,6,3,0,1);break;
+						case "d2":   case "D2": turn(green,8,7,6,red,8,7,6,blue,8,7,6,orange,8,7,6,yellow,2,5,0,1,6,3,8,7);
+									 turn(green,8,7,6,red,8,7,6,blue,8,7,6,orange,8,7,6,yellow,2,5,0,1,6,3,8,7);break;
+						
+						case "f":  case "F": turn(orange,2,5,8,white,8,7,6,red,6,3,0,yellow,0,1,2,green,0,1,6,3,8,7,2,5);break;
+						case "f'":  case "F'": turn(orange,2,5,8,yellow,0,1,2,red,6,3,0,white,8,7,6,green,0,1,2,5,8,7,6,3);break;
+						case "f2":  case "F2": turn(orange,2,5,8,white,8,7,6,red,6,3,0,yellow,0,1,2,green,0,1,6,3,8,7,2,5);
+									turn(orange,2,5,8,white,8,7,6,red,6,3,0,yellow,0,1,2,green,0,1,6,3,8,7,2,5);break;
+						
+						case "b":  case "B":  turn(orange,0,3,6,yellow,6,7,8,red,8,5,2,white,2,1,0,blue,0,1,6,3,8,7,2,5);break;
+						case "b'": case "B'":  turn(orange,0,3,6,white,2,1,0,red,8,5,2,yellow,6,7,8,blue,0,1,2,5,8,7,6,3);break;
+						case "b2":  case "B2": turn(orange,0,3,6,yellow,6,7,8,red,8,5,2,white,2,1,0,blue,0,1,6,3,8,7,2,5);
+									turn(orange,0,3,6,yellow,6,7,8,red,8,5,2,white,2,1,0,blue,0,1,6,3,8,7,2,5);break;
+						
+						case "r":  case "R": turn(green,2,5,8,white,2,5,8,blue,6,3,0,yellow,2,5,8,red,0,1,6,3,8,7,2,5);break;
+						case "r'": case "R'":  turn(green,2,5,8,yellow,2,5,8,blue,6,3,0,white,2,5,8,red,0,1,2,5,8,7,6,3);break;
+						case "r2": case "R2":  turn(green,2,5,8,white,2,5,8,blue,6,3,0,yellow,2,5,8,red,0,1,6,3,8,7,2,5);
+									turn(green,2,5,8,white,2,5,8,blue,6,3,0,yellow,2,5,8,red,0,1,6,3,8,7,2,5);break;
+						
+						case "l":  case "L": turn(green,0,3,6,yellow,0,3,6,blue,8,5,2,white,0,3,6,orange,0,1,6,3,8,7,2,5);break;
+						case "l'":  case "L'": turn(green,0,3,6,white,0,3,6,blue,8,5,2,yellow,0,3,6,orange,0,1,2,5,8,7,6,3);break;
+						case "l2": case "L2":  turn(green,0,3,6,yellow,0,3,6,blue,8,5,2,white,0,3,6,orange,0,1,6,3,8,7,2,5);
+									turn(green,0,3,6,yellow,0,3,6,blue,8,5,2,white,0,3,6,orange,0,1,6,3,8,7,2,5);break;
+									
+						default:document.getElementById('label').innerHTML = 'Invalid Scramble';
+					}
+				}
+			}
+			
+			function load(){
+			
+				for(var x = 0; x<whitearr.length; x++){
+				var a = white[x];
+				whitearr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+				for(var x = 0; x<yellarr.length; x++){
+				var a = yellow[x];
+				yellarr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+				for(var x = 0; x<redarrr.length; x++){
+				var a = red[x];
+				redarrr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+				for(var x = 0; x<greenarr.length; x++){
+				var a = green[x];
+				greenarr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+				for(var x = 0; x<bluearr.length; x++){
+				var a = blue[x];
+				bluearr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+				for(var x = 0; x<oranarr.length; x++){
+				var a = orange[x];
+				oranarr[x].style.backgroundColor = (a == 1)?'white':(a==2)?'red':
+				(a==3)?'yellow':(a==4)?'green':(a==5)?'blue':'orange';
+				}
+			}
+			
+			function turn(fside,fa,fb,fc,uside,ua,ub,uc,bside,ba,bb,bc,dside,da,db,dc,rside,ra,rb,rc,rd,re,rf,rg,rh){
+				var temp = new Array(fside[fa],fside[fb],fside[fc],rside[ra],rside[rb]);
+				
+				fside[fa] = dside[da];
+				fside[fb] = dside[db];
+				fside[fc] = dside[dc];
+				
+				dside[da] = bside[ba];
+				dside[db] = bside[bb];
+				dside[dc] = bside[bc];
+				
+				bside[ba] = uside[ua];
+				bside[bb] = uside[ub];
+				bside[bc] = uside[uc];
+				
+				uside[ua] = temp[0];
+				uside[ub] = temp[1];
+				uside[uc] = temp[2];
+				
+				rside[ra] = rside[rc];
+				rside[rb] = rside[rd];
+				rside[rc] = rside[re];
+				rside[rd] = rside[rf];
+				rside[re] = rside[rg];
+				rside[rf] = rside[rh];
+				rside[rg] = temp[3]
+				rside[rh] = temp[4];
+				
+			}
+			window.onload = load();
+		</script>
+	</body>
+</html>

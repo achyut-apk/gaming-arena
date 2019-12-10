@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1//DTD/xhtml1-transitional.dtd">
+
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>IDontKnow</title>
+		<style type="text/css">
+			@viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-ms-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			
+			@-webkit-viewport{
+				zoom : 1.0;
+				width: extend-to-zoom;
+			}
+			body{
+				margin:0;
+				padding:0;
+			}
+			/*#cnv{
+				width: 90%;
+			}*/
+	</style>
+	</head>
+	<body><canvas id="cnv" width="600" height="300" style="border: 2px solid red;"></canvas>
+
+<script type="text/javascript">
+	var canvas = document.getElementById('cnv');
+	var ctx = canvas.getContext('2d');
+	ctx.font = '20px Arial';
+
+	var WIDTH = 600;
+	var HEIGHT = 300;
+
+	var frameCount;
+	var lifePercent;
+	var attackSpeed;
+	var ammo;
+	var megaAtkCounter;
+
+	var enemyList;
+	var bulletList;
+	var upgradeList1;
+	var upgradeList2;
+
+	var player;
+	var mouseX;
+	var mouseY;
+	var input = {
+		pressingLeft: false,
+		pressingRight: false,
+		pressingDown: false,
+		pressingUp: false,
+	}
+	var imgList = {};
+	imgList.player = new Image();
+	imgList.enemy = new Image();
+	imgList.bullet = new Image();
+	imgList.ammo = new Image();
+	imgList.health = new Image();
+
+	imgList.player.src = 'img/player.png';
+	imgList.enemy.src = 'img/enemy.png';
+	imgList.bullet.src = 'img/bullet.png';
+	imgList.ammo.src = 'img/ammo.png';
+	imgList.health.src = 'img/health.png';
+
+	restart = function(){
+		frameCount =0;
+		player = new Character(canvas.width/2, 0,canvas.height/2,  0, 30, 30 ,imgList.player, 0, 0,'player');
+		ammo = 15;
+		megaAtkCounter= 0;
+
+		enemyList = {};
+		upgradeList1 = {};
+		upgradeList2 = {};
+		bulletList = {};
+
+		lifePercent = 15;
+
+		for(var i = 0; i<3; i++){
+			randGenChar(0);
+		}
+	}
+
+	showLifeLeft = function(){
+		ctx.save();
+		ctx.fillStyle = 'black';
+		ctx.fillRect(82, 5, 5, 15);
+		ctx.fillRect(2, 1, 80, 25);
+		ctx.clearRect(4, 2, 77, 22);
+		ctx.fillStyle = 'red';
+
+		for(var i=1; i<=lifePercent; i++){
+			ctx.fillRect(i*5, 3, 5, 20);
+		}
+		ctx.restore();
+	}
+	showAmmoLeft = function(){
+		ctx.save();
+		ctx.fillStyle = 'orange';
+
+		for(var i=1; i<=ammo; i++){
+			ctx.fillRect(WIDTH-i*5-3, 3, 4, 20);
+		}
+		ctx.restore();
+	}
+	showMegaAtk = function(){
+		ctx.save();
+		ctx.fillStyle = 'black';
+		ctx.fillRect(300, 2, 25, 25);
+		ctx.fillStyle = 'violet';
+		ctx.fillRect(301, 3, 23, 23);
+
+		megaAtkCounter+=megaAtkCounter==500?0:1;
+		ctx.clearRect(301,3, 23, ((megaAtkCounter==500)?0:((500-megaAtkCounter)/500*23)));
+		if(megaAtkCounter>=500)
+			if(frameCount%25>8){
+				ctx.font = '15px ARIAL';
+				ctx.fillText('Right click',220, 13);
+				ctx.fillText('for Mega Attack! ',185, 27);
+			}	
+		ctx.restore();
+	}
+
+	randGenChar = function(type){
+		var spdX = 1+Math.random()*8;
+		var spdY = 1+Math.random()*8;
+		var x = 5+Math.random()*595;
+		var y = 5+Math.random()*295;
+		var id = Math.random()*20;
+		var list; 
+		var timer = 0;
+		var img;
+		var type;
+
+		switch(type){
+			case 0: id = 'E'+id;
+					img = imgList.enemy;
+					width = 25;
+					height = 25;
+					list = enemyList;
+					tpye = 'enemy';
+					break;
+			case 1: id = 'LU'+id;
+					img = imgList.health;
+					width = 15;
+					height = 15;
+					spdY = 0;
+					spdX =0;
+					list = upgradeList1;
+					type = 'upg1';
+					timer  = 700;
+					break;
+
+			case 2:	id = 'BU'+id;
+					img = imgList.ammo;
+					width = 15;
+					height = 15;
+					spdY = 0;
+					spdX =0;
+					list = upgradeList2;
+					type = 'upg2';
+					timer = 700;
+					break;
+			default: ;
+		}
+		var character = new Character(x, spdX, y, spdY, width, height, img, id , timer,type);
+		list[id] = character;
+	}
+
+	Character = function(x , spdX, y, spdY,width, height, img, id, timer, type){
+		this.x = x;
+		this.y = y;
+		this.spdX = spdX;
+		this.spdY = spdY;
+		this.width = width;
+		this.height = height;
+		this.img = img;
+		this.id = id;
+		this.timer = timer;
+		this.type = type;
+	}
+
+	getDistance = function(char1,char2){
+		var xd = (char1.x+ char1.width/2)-(char2.x+char2.width/2);
+		var yd = (char1.y+ char1.height/2)-(char2.y+char2.height/2);
+
+		return Math.sqrt(xd*xd+yd*yd);
+	}
+
+	updatePosition = function(character){
+		if(character.type == 'player'){
+			if(input.pressingRight)
+				player.x+=10;
+			else	if(input.pressingLeft)
+				player.x-=10;
+			else	if(input.pressingUp)
+				player.y-=10;
+			else	if(input.pressingDown)
+				player.y+=10;
+			//validation
+			if(player.x<player.width/2)
+				player.x= player.width/2;
+			if(player.x>WIDTH-player.width/2)
+				player.x=WIDTH-player.width/2;
+			if(player.y<player.height/2)
+				player.y= player.height/2;
+			if(player.y>HEIGHT-player.height/2)
+				player.y=HEIGHT-player.height/2;
+		}
+		else {
+
+				character.x += character.spdX;
+				character.y += character.spdY;
+			if(character.type != "bullet"){
+				if(character.x <= 0 || character.x >= WIDTH){
+					character.spdX = -character.spdX;
+				}
+				if(character.y <= 0 || character.y >= HEIGHT){
+					character.spdY = -character.spdY;
+				}
+			}
+		}
+	}
+	drawChar = function(character){
+		ctx.save();
+		ctx.drawImage(character.img,
+			0, 0, character.img.width, character.img.height,
+		 character.x-character.width/2, character.y-character.height/2, character.width, character.height);
+		ctx.restore();
+	}
+
+	updateCharacter = function(character){
+		updatePosition(character);
+		drawChar(character);
+	}
+
+	update = function(){
+		frameCount++;
+
+
+		 ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+		for(var i in upgradeList2){
+			if(upgradeList2[i].timer<=0){
+				delete upgradeList2[i];
+				continue;
+			}
+			updateCharacter(upgradeList2[i]);
+			upgradeList2[i].timer--;
+			var dist = getDistance(player,upgradeList2[i]);
+
+			if(dist<20){
+				ammo = ammo+10<30? ammo+10: 30;
+				delete upgradeList2[i];
+			}
+		}
+		for(var i in upgradeList1){
+			if(upgradeList1[i].timer<=0){
+				delete upgradeList1[i];
+				continue;
+			}
+			updateCharacter(upgradeList1[i]);
+			upgradeList1[i].timer--;
+			var dist = getDistance(player,upgradeList1[i]);
+
+			if(dist<20){
+				lifePercent = lifePercent+3<15? lifePercent+5: 15;
+				delete upgradeList1[i];
+			}
+		}
+
+		for(var i in bulletList){
+			updateCharacter(bulletList[i]);
+			bulletList[i].timer--;
+
+			if(bulletList[i].timer<=0){
+				delete bulletList[i];
+				continue;
+			}
+			for(var j in enemyList){
+				var dist = getDistance(bulletList[i], enemyList[j]);
+
+				if(dist < 15){
+					delete bulletList[i];
+					delete enemyList[j];
+					break;
+				}
+			}
+		}
+
+		for(var i in enemyList){
+
+			if(enemyList[i]!=undefined){
+				updateCharacter(enemyList[i]);
+				var dist = getDistance(player,enemyList[i]);
+				if(dist<20){
+						lifePercent--;
+
+					if(lifePercent<=0){
+						restart();
+						console.log('You died. '+lifePercent);
+						return;
+					}
+				}
+			}
+		}
+
+		if(frameCount % 250==0){
+			randGenChar(0);
+		}
+
+		if(frameCount % 500==0 ){
+			if(Math.random() < 0.4){
+				randGenChar(1); 
+			}
+			else{
+				randGenChar(2);
+			}
+		}
+
+		updateCharacter(player);
+		showLifeLeft();
+		showMegaAtk();
+		showAmmoLeft();
+	}
+
+	shootBullet = function(character, overrideAngle){
+		var angle = Math.atan2(mouseY, mouseX);
+		angle = overrideAngle==undefined?angle:overrideAngle/Math.PI*180;
+		var spdX = Math.cos(angle)*25;
+		var spdY = Math.sin(angle)*25;
+		var id = 'B'+Math.random();
+
+		var bullet = new Character(character.x, spdX, character.y, spdY, 8, 8, imgList.bullet , id, 100 ,'bullet');
+		bulletList[id]= bullet;
+	}
+
+	mover = function(mouse) {
+		mouse.preventDefault();
+		var mouseX = mouse.clientX;
+		var mouseY = mouse.clientY;
+
+		player.x = mouseX;
+		player.y = mouseY;
+	}
+	document.onkeydown = function(event){
+		if(event.keyCode === 65)
+			input.pressingLeft = true;
+		if(event.keyCode === 68)
+			input.pressingRight = true;
+		if(event.keyCode === 83)
+			input.pressingDown = true;
+		if(event.keyCode === 87)
+			input.pressingUp = true;
+	}
+	document.onkeyup = function(event){
+		if(event.keyCode === 65)
+			input.pressingLeft = false;
+		if(event.keyCode === 68)
+			input.pressingRight = false;
+		if(event.keyCode === 83)
+			input.pressingDown = false;
+		if(event.keyCode === 87)
+			input.pressingUp = false;
+
+	}
+	document.onclick = function(event){
+		event.preventDefault();
+
+		if(ammo > 0){	
+			shootBullet(player);
+			ammo--;
+		}
+	}
+	document.onmousemove = function(event){
+		mouseX = event.clientX - canvas.getBoundingClientRect().left;
+		mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+		mouseX-=player.x;
+		mouseY-=player.y;
+	}
+	document.oncontextmenu = function(event){
+		event.preventDefault();
+		if(megaAtkCounter>=500){		
+			for(var i=0; i<360; i+=4){
+			shootBullet(player, i);
+			}
+			megaAtkCounter = 0;
+		}
+	}
+
+	document.ontouchmove= mover;
+
+
+	restart();
+	setInterval(update, 40);
+</script>
+</body>
+</html>
